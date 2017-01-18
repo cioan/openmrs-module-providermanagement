@@ -52,6 +52,7 @@ public class AdminList extends AdministrationSectionExt {
         map.put("/pages/providermanagement/manageSuggestions.page", "providermanagement.manageSuggestions");
         map.put("/pages/providermanagement/manageOtherSettings.page", "providermanagement.manageOtherSettings");
         map.put("/pages/providermanagement/providerHome.page", "providermanagement.providerSearch");
+		map.put("/pages/providermanagement/providerList.page", "providermanagement.providerList");
 		return map;
 	}
 	

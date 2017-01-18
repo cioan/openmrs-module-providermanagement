@@ -1,4 +1,6 @@
-<% ui.includeCss("providermanagement", "manage.css") %>
+<%
+    ui.includeCss("providermanagement", "manage.css")
+%>
 
 ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUrl: config.successUrl]) }
 
@@ -32,7 +34,7 @@ ${ ui.startForm("saveProviderRole", [id: providerRole?.providerRoleId, successUr
                     <% relationshipTypes.each { %>
                         <option value="${ it.id }"
                             ${ providerRole?.relationshipTypes?.collect{types -> types.id}?.contains(it.id) ? 'selected' : '' }
-                        >${ it.aIsToB }</option>
+                        >${ it } </option>
                     <% } %>
                 </select>
             </td>

@@ -1,10 +1,13 @@
 
 <%
    context.requirePrivilege("Provider Management Dashboard - View Providers")
+
    ui.decorateWith("providermanagement", "providerManagementPage")
    ui.includeCss("providermanagement", "providerHome.css")
+
    def providerSearchId = ui.randomId()
-   def advancedSearchId = ui.randomId() %>
+   def advancedSearchId = ui.randomId()
+%>
 
 <script>
     jq(function() {
