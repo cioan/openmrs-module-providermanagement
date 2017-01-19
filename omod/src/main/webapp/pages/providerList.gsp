@@ -22,6 +22,7 @@
         <tr>
             <th>${ ui.message("Identifier") }</th>
             <th>${ ui.message("coreapps.person.name") }</th>
+            <th>${ ui.message("coreapps.gender") }</th>
             <th>${ ui.message("Role") }</th>
         </tr>
     </thead>
@@ -39,7 +40,8 @@
         %>
         <tr id="provider-${ provider.person.personId}">
                 <td>${ ui.format(provider.identifier) }</td>
-                <td>${ ui.format(provider.name) }</td>
+                <td><a href="/${ contextPath }/providermanagement/editProvider.page?personId=${ provider.person.personId }">${ ui.format(provider.name) }</a></td>
+                <td>${ ui.format(provider.person.gender) }</td>
                 <td>${ ui.format(provider.providerRole) }</td>
 
         </tr>
