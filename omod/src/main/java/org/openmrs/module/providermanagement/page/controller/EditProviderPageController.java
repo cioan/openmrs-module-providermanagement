@@ -4,7 +4,10 @@ package org.openmrs.module.providermanagement.page.controller;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -13,7 +16,11 @@ import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.account.AccountDomainWrapper;
 import org.openmrs.module.emrapi.account.AccountService;
 import org.openmrs.module.emrapi.account.AccountValidator;
+import org.openmrs.module.providermanagement.Provider;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
+import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
+import org.openmrs.module.providermanagement.exception.SuggestionEvaluationException;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
@@ -22,9 +29,11 @@ import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EditProviderPageController {
@@ -46,13 +55,35 @@ public class EditProviderPageController {
         return account;
     }
 
-    public void get(PageModel model, @MethodParam("getAccount") AccountDomainWrapper account,
+    public void get(PageModel model,
+                    @MethodParam("getAccount") AccountDomainWrapper account,
+                    @ModelAttribute("patientId") @BindParams Patient patient,
                     @SpringBean("accountService") AccountService accountService,
                     @SpringBean("adminService") AdministrationService administrationService,
-                    @SpringBean("providerManagementService") ProviderManagementService providerManagementService) {
+                    @SpringBean("providerManagementService") ProviderManagementService providerManagementService) throws PersonIsNotProviderException, InvalidRelationshipTypeException, SuggestionEvaluationException {
 
         model.addAttribute("account", account);
         model.addAttribute("providerRoles", providerManagementService.getAllProviderRoles(false));
+
+        List<Patient> patientsList = new ArrayList<Patient>();
+        Provider provider = account.getProvider();
+        if (provider != null ) {
+            if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
+                for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
+                    if (!relationshipType.isRetired()) {
+                        for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
+                            patientsList.add(Context.getPatientService().getPatient(relationship.getPersonB().getId()));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (patient != null) {
+            //add relationship to patient
+        }
+
+        model.addAttribute("patientsList", patientsList);
     }
 
     public String post(@MethodParam("getAccount") @BindParams AccountDomainWrapper account, BindingResult errors,
