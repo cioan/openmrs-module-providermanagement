@@ -18,7 +18,8 @@
     }
     providerRolesOptions = providerRolesOptions.sort { it.label };
 
-    def editDateFormat = new java.text.SimpleDateFormat("dd-MM-yyyy")
+    def editDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    def endDate = editDateFormat.format(new Date())
 
 %>
 
@@ -56,6 +57,14 @@
             createAddPatientDialog();
             showAddPatientDialog();
             event.preventDefault();
+        });
+
+        jq(document).on('click', '.delete-relationship', function(event) {
+            var providerId = jq(event.target).attr("data-provider-id");
+            var relationshipTypeId = jq(event.target).attr("data-relationship-type");
+            var relationshipId = jq(event.target).attr("data-patient-relationship");
+            var endDate = '${endDate}';
+            removePatientFromList(providerId, relationshipTypeId, relationshipId, endDate);
         });
     });
 
@@ -170,7 +179,7 @@
     <div class="col-sm-8">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">${ui.message("Patients")}</h3>
+                <h3 class="panel-title">${ui.message("Active Patients")}</h3>
             </div>
 
             <div class="panel-body ">
@@ -195,9 +204,8 @@
                             <tr>
                                 <th>${ ui.message("Identifier") }</th>
                                 <th>${ ui.message("coreapps.person.name") }</th>
-                                <th>${ ui.message("coreapps.gender") }</th>
-                                <th>${ ui.message("Birthdate") }</th>
-                                <th>${ ui.message("Address") }</th>
+                                <th>${ ui.message("Start Date") }</th>
+                                <th>&nbsp;</th>
                             </tr>
                             </thead>
 
@@ -208,15 +216,19 @@
                                 <td colspan="4">${ ui.message("coreapps.none") }</td>
                             </tr>
                             <% } %>
-                            <% patientsList.each { patient ->
+                            <% patientsList.each { row ->
 
                             %>
-                            <tr id="patient-${ patient.patientId}">
-                                <td>${ ui.format(patient.patientIdentifier.identifier) }</td>
-                                <td>${ ui.format(patient.personName) }</td>
-                                <td>${ ui.format(patient.gender) }</td>
-                                <td>${ ui.format(patient.birthdate) }</td>
-                                <td>${ ui.format(patient.personAddress) }</td>
+                            <tr id="patient-${ row.patient.patientId }">
+                                <td>${ ui.format(row.patient.patientIdentifier.identifier) }</td>
+                                <td>${ ui.format(row.patient.personName) }</td>
+                                <td>${ ui.format(row.relationship.startDate) }</td>
+                                <td><a><i class="delete-relationship icon-remove"
+                                       data-provider-id="${account.person.personId}"
+                                       data-relationship-type="${row.relationshipType.id}"
+                                       data-patient-relationship="${row.relationship.id}"
+                                ></i></a>
+                                </td>
                             </tr>
                             <% } %>
                             </tbody>
@@ -227,5 +239,52 @@
                 </table>
             </div>
         </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">History List</h3>
+                </div>
+                <div class="panel-body">
+
+                        <table class="table table-condensed borderless">
+                            <tbody>
+                            <tr>
+                                <table id="patients-history-list" width="100%" border="1" cellspacing="0" cellpadding="2">
+                                    <thead>
+                                    <tr>
+                                        <th>${ ui.message("Identifier") }</th>
+                                        <th>${ ui.message("coreapps.person.name") }</th>
+                                        <th>${ ui.message("Start Date") }</th>
+                                        <th>${ ui.message("End Date") }</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <% if ((patientsHistoryList == null) ||
+                                            (patientsHistoryList != null && patientsHistoryList.size() == 0)) { %>
+                                    <tr>
+                                        <td colspan="4">${ ui.message("coreapps.none") }</td>
+                                    </tr>
+                                    <% } %>
+                                    <% patientsHistoryList.each { row ->
+
+                                    %>
+                                    <tr id="patient-${ row.patient.patientId }">
+                                        <td>${ ui.format(row.patient.patientIdentifier.identifier) }</td>
+                                        <td>${ ui.format(row.patient.personName) }</td>
+                                        <td>${ ui.format(row.relationship.startDate) }</td>
+                                        <td>${ ui.format(row.relationship.endDate) }</td>
+                                    </tr>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </tr>
+
+                            </tbody>
+                        </table>
+
+                </div>
+            </div>
     </div>
+
 </div>
