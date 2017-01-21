@@ -18,6 +18,12 @@
     }
     providerRolesOptions = providerRolesOptions.sort { it.label };
 
+    def relationshipTypesOptions = []
+    relationshipTypes. each {
+        relationshipTypesOptions.push([ label: ui.format(it.aIsToB + "/" + it.bIsToA), value: it.relationshipTypeId ])
+    }
+    relationshipTypesOptions = relationshipTypesOptions.sort { it.label };
+
     def editDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
     def endDate = editDateFormat.format(new Date())
 
@@ -66,6 +72,8 @@
             var endDate = '${endDate}';
             removePatientFromList(providerId, relationshipTypeId, relationshipId, endDate);
         });
+
+        jq("input[name='givenName']").focus();
     });
 
 
@@ -75,6 +83,9 @@
 #unlock-button {
     margin-top: 1em;
 }
+    #add-patient-dialog {
+        width: 650px;
+    }
 </style>
 
 
@@ -85,29 +96,45 @@
     <div class="dialog-content">
         <input type="hidden" id="providerId" value="${account.person.personId}"/>
         <input type="hidden" id="patientId" value=""/>
-        <ul>
-            <li class="info">
-                <span>${ ui.message("Assign Patient to Provider") }</span>
-            </li>
-        </ul>
 
-        ${ ui.message("Find Patient:") }
-        ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
-                [ afterSelectedUrl: afterSelectedUrl,
-                  rowSelectionHandler: "selectPatientHandler",
-                  showLastViewedPatients: 'false' ])}
+        <span>${ ui.message("Assign Patient to Provider") }</span>
 
-        ${ ui.includeFragment("uicommons", "field/datetimepicker", [
-                id: "relationshipStartDate",
-                formFieldName: "relationshipStartDate",
-                label:"",
-                defaultDate: new Date(),
-                endDate: editDateFormat.format(new Date()),
-                useTime: false,
-        ])}
+        <div class="panel-body ">
+            <fieldset>
+            <p>
+            ${ ui.message("Find Patient:") }
+            ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
+                    [ afterSelectedUrl: afterSelectedUrl,
+                      rowSelectionHandler: "selectPatientHandler",
+                      showLastViewedPatients: 'false' ])}
+            </p>
+            <br><br>
+            <p>
+            ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                    id: "relationshipStartDate",
+                    formFieldName: "relationshipStartDate",
+                    label:"Start Date: &nbsp;&nbsp;",
+                    defaultDate: new Date(),
+                    endDate: editDateFormat.format(new Date()),
+                    useTime: false,
+            ])}
+            </p>
+            <br><br>
+            <p>
+                ${ ui.includeFragment("uicommons", "field/dropDown", [
+                        label: ui.message("Relationship Type"),
+                        formFieldName: "relationshipType",
+                        classes: ["required"],
+                        options: relationshipTypesOptions,
+                        hideEmptyLabel: true,
+                        expanded: true
+                ])}
+            </p>
+            </fieldset>
 
-        <button class="confirm right">${ ui.message("coreapps.yes") }</button>
-        <button class="cancel">${ ui.message("coreapps.no") }</button>
+        </div>
+        <button class="confirm right">${ ui.message("Assign") }</button>
+        <button class="cancel">${ ui.message("Cancel") }</button>
     </div>
 </div>
 
@@ -127,15 +154,15 @@
                     <input style="display:none" type="password" name="wrong-username-from-autocomplete"/>
 
                         ${ ui.includeFragment("uicommons", "field/text", [
-                                label: ui.message("Family Name"),
-                                formFieldName: "familyName",
-                                initialValue: (account.familyName ?: '')
-                        ])}
-
-                        ${ ui.includeFragment("uicommons", "field/text", [
                                 label: ui.message("Given Name"),
                                 formFieldName: "givenName",
                                 initialValue: (account.givenName ?: '')
+                        ])}
+
+                        ${ ui.includeFragment("uicommons", "field/text", [
+                                label: ui.message("Family Name"),
+                                formFieldName: "familyName",
+                                initialValue: (account.familyName ?: '')
                         ])}
 
                         ${ ui.includeFragment("uicommons", "field/radioButtons", [
@@ -155,7 +182,7 @@
                             <p>
                                 ${ ui.includeFragment("uicommons", "field/dropDown", [
                                         label: ui.message("Provider Role"),
-                                        emptyOptionLabel: ui.message("emr.chooseOne"),
+                                        emptyOptionLabel: ui.message("Select a Role"),
                                         formFieldName: "providerRole",
                                         initialValue: (account.providerRole?.id ?: ''),
                                         options: providerRolesOptions
@@ -168,8 +195,6 @@
                         <input type="button" class="cancel" value="${ ui.message("emr.cancel") }" onclick="javascript:window.location='/${ contextPath }/providermanagement/providerList.page'" />
                         <input type="submit" class="confirm" id="save-button" value="${ ui.message("emr.save") }"  />
                     </div>
-
-
                 </form>
 
             </div>
@@ -184,17 +209,16 @@
 
             <div class="panel-body ">
                 <table class="table table-condensed borderless">
-                    <thead>
-
-                    </thead>
                     <tbody>
                     <tr>
                         <div id="addPatientToList">
-                            <a href="">
-                                <button id="add-patient-button">${ ui.message("Add Patient") }
-                                &nbsp; <i class="icon-plus"></i>
-                                </button>
-                            </a>
+                            <% if (createAccount != true) { %>
+                                <a href="">
+                                    <button id="add-patient-button">${ ui.message("Add Patient") }
+                                    &nbsp; <i class="icon-plus"></i>
+                                    </button>
+                                </a>
+                            <% } %>
                         </div>
                     </tr>
 

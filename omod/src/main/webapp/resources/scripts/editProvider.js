@@ -6,10 +6,11 @@ function createAddPatientDialog() {
                 var patientId = jq("#patientId").val();
                 var personId = jq("#providerId").val();
                 var relationshipStartDateField = jq("#relationshipStartDate-field").val();
+                var relationshipType = jq("select[name='relationshipType']").val();
                 emr.getFragmentActionWithCallback('providermanagement', 'providerEdit', 'addPatient'
                     , { provider: personId,
                         patient: patientId,
-                        relationshipType: 15,
+                        relationshipType: relationshipType,
                         date: relationshipStartDateField
                     }
                     , function(data) {

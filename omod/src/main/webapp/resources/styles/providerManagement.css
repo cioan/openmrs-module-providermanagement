@@ -4904,6 +4904,10 @@ ul.icons li [class*=" icon-"] {
   background-color: #ffffff;
 }
 
+#add-patient-dialog {
+  width: 650px;
+}
+
 #sticky {
   padding: 0.5ex;
   height: 50px;

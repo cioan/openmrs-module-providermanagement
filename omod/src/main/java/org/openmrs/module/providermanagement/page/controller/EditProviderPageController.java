@@ -84,11 +84,13 @@ public class EditProviderPageController {
 
         List<ProviderPatientRelationship> patientsList = new ArrayList<ProviderPatientRelationship>();
         List<ProviderPatientRelationship> patientsHistoryList = new ArrayList<ProviderPatientRelationship>();
+        List<RelationshipType> relationshipTypes = new ArrayList<RelationshipType>();
         Provider provider = account.getProvider();
         if (provider != null ) {
             if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
                 for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
                     if (!relationshipType.isRetired()) {
+                        relationshipTypes.add(relationshipType);
                         for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
                             if (relationship.getEndDate() == null) {
                                 patientsList.add(new ProviderPatientRelationship(patientService.getPatient(relationship.getPersonB().getId()), relationship, relationshipType));
@@ -100,6 +102,7 @@ public class EditProviderPageController {
                 }
             }
         }
+        model.addAttribute("relationshipTypes", relationshipTypes);
         model.addAttribute("patientsList", patientsList);
         model.addAttribute("patientsHistoryList", patientsHistoryList);
     }
@@ -115,9 +118,6 @@ public class EditProviderPageController {
                        @SpringBean("accountValidator") AccountValidator accountValidator, PageModel model,
                        HttpServletRequest request) {
 
-        // manually bind userEnabled (since checkboxes don't submit anything if unchecked));
-        //account.setUserEnabled(false);
-
         accountValidator.validate(account, errors);
 
         if (!errors.hasErrors()) {
@@ -127,27 +127,24 @@ public class EditProviderPageController {
                 }
                 accountService.saveAccount(account);
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE,
-                        messageSourceService.getMessage("emr.account.saved"));
+                        messageSourceService.getMessage("Provider saved"));
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_TOAST_MESSAGE, "true");
 
-                return "redirect:/providermanagement/providerList.page";
+                return "redirect:/providermanagement/editProvider.page?personId=" + account.getPerson().getId();
             } catch (Exception e) {
                 log.warn("Some error occurred while saving account details:", e);
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE,
-                        messageSourceService.getMessage("emr.account.error.save.fail", new Object[]{e.getMessage()}, Context.getLocale()));
+                        messageSourceService.getMessage("Failed to save provider", new Object[]{e.getMessage()}, Context.getLocale()));
             }
         } else {
             sendErrorMessage(errors, messageSource, request);
         }
 
-        // reload page on error
-        // TODO: show password fields toggle should work better
-
         model.addAttribute("errors", errors);
         model.addAttribute("account", account);
         model.addAttribute("providerRoles", providerManagementService.getAllProviderRoles(false));
 
-        return "providerList";
+        return "redirect:/providermanagement/editProvider.page";
     }
 
     private void sendErrorMessage(BindingResult errors, MessageSource messageSource, HttpServletRequest request) {
