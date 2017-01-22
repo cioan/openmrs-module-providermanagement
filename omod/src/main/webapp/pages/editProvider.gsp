@@ -16,7 +16,7 @@
     providerRoles. each {
         providerRolesOptions.push([ label: ui.format(it), value: it.id ])
     }
-    providerRolesOptions = providerRolesOptions.sort { it.label };
+    providerRolesOptions = providerRolesOptions.sort { it.id };
 
     def relationshipTypesOptions = []
     relationshipTypes. each {
@@ -26,6 +26,8 @@
 
     def editDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
     def endDate = editDateFormat.format(new Date())
+    def  formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+
 
 %>
 
@@ -82,12 +84,25 @@
 
         });
 
+         jq("select[name='providerRole']").on('change', function(event) {
+             var roleId = this.value;
+             console.log("provider role has been selected: " + roleId );
+
+         });
+
         if ('${createAccount}' == 'true') {
             jq("input[name='givenName']").focus();
         } else {
             jq("#add-patient-button").focus();
         }
 
+        var selectedProviderRole = jq("select[name='providerRole']").val();
+        console.log("selectedProviderRole = " + selectedProviderRole);
+        if ( !isNaN(selectedProviderRole) ) {
+            // we have number
+            //var attributeTypes = getProviderRoleAttributeTypes(parseInt(selectedProviderRole));
+            //console.log("attributeTypes = " + attributeTypes);
+        }
     });
 
 
@@ -214,6 +229,25 @@
                                 options: genderOptions
                         ])}
 
+                        <% if (createAccount != true && account.provider.attributes !=null && account.provider.attributes.size() > 0) {
+                            account.provider.attributes.each { attribute ->
+                                if ( attribute.attributeType.datatypeClassname == 'org.openmrs.customdatatype.datatype.DateDatatype' ) {  %>
+                                        ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                                                id: "attributeIdentifier-" + attribute.providerAttributeId,
+                                                formFieldName: "attributeIdentifier-" + attribute.providerAttributeId,
+                                                label: attribute.attributeType.name,
+                                                defaultDate: formatter.parse(attribute.valueReference),
+                                                useTime: false,
+                                        ])}
+                                <% } else { %>
+                                        ${ ui.includeFragment("uicommons", "field/text", [
+                                                label: attribute.attributeType.name,
+                                                formFieldName: "attributeIdentifier-" + attribute.providerAttributeId,
+                                                initialValue: attribute.valueReference
+                                        ])}
+                                <% } %>
+                            <% } %>
+                        <% } %>
 
                         <div class="emr_providerDetails">
                             ${ ui.includeFragment("uicommons", "field/text", [
@@ -224,10 +258,11 @@
                             <p>
                                 ${ ui.includeFragment("uicommons", "field/dropDown", [
                                         label: ui.message("Provider Role"),
-                                        emptyOptionLabel: ui.message("Select a Role"),
                                         formFieldName: "providerRole",
                                         initialValue: (account.providerRole?.id ?: ''),
-                                        options: providerRolesOptions
+                                        options: providerRolesOptions,
+                                        hideEmptyLabel: true,
+                                        expanded: true
                                 ])}
                             </p>
 

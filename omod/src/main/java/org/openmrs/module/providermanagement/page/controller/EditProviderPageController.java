@@ -6,6 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.ProviderAttribute;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
@@ -17,6 +19,7 @@ import org.openmrs.module.emrapi.account.AccountDomainWrapper;
 import org.openmrs.module.emrapi.account.AccountService;
 import org.openmrs.module.emrapi.account.AccountValidator;
 import org.openmrs.module.providermanagement.Provider;
+import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.providermanagement.exception.InvalidRelationshipTypeException;
 import org.openmrs.module.providermanagement.exception.PersonIsNotProviderException;
@@ -34,8 +37,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EditProviderPageController {
     protected final Log log = LogFactory.getLog(getClass());
@@ -85,10 +91,14 @@ public class EditProviderPageController {
         List<ProviderPatientRelationship> patientsList = new ArrayList<ProviderPatientRelationship>();
         List<ProviderPatientRelationship> patientsHistoryList = new ArrayList<ProviderPatientRelationship>();
         List<RelationshipType> relationshipTypes = new ArrayList<RelationshipType>();
+        Set<ProviderAttributeType> providerAttributeTypes = new HashSet<ProviderAttributeType>();
+
         Provider provider = account.getProvider();
         if (provider != null ) {
-            if (provider.getProviderRole() != null && provider.getProviderRole().getRelationshipTypes() != null) {
-                for (RelationshipType relationshipType : provider.getProviderRole().getRelationshipTypes() ) {
+            ProviderRole providerRole = provider.getProviderRole();
+            if (providerRole != null && providerRole.getRelationshipTypes() != null) {
+                providerAttributeTypes = providerRole.getProviderAttributeTypes();
+                for (RelationshipType relationshipType : providerRole.getRelationshipTypes() ) {
                     if (!relationshipType.isRetired()) {
                         relationshipTypes.add(relationshipType);
                         for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
@@ -105,6 +115,7 @@ public class EditProviderPageController {
         model.addAttribute("relationshipTypes", relationshipTypes);
         model.addAttribute("patientsList", patientsList);
         model.addAttribute("patientsHistoryList", patientsHistoryList);
+        model.addAttribute("providerAttributeTypes", providerAttributeTypes);
     }
 
     public String post(@MethodParam("getAccount") @BindParams AccountDomainWrapper account, BindingResult errors,

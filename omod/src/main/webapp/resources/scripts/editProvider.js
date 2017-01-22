@@ -62,3 +62,23 @@ function createRemovePatientDialog(providerId, relationshipTypeId, relationshipI
 function showRemovePatientDialog(){
     removePatientDialog.show();
 }
+
+function getProviderRoleAttributeTypes(roleId) {
+    emr.getFragmentActionWithCallback('providermanagement', 'providerRoleAttribute', 'getAttributeTypes'
+        , { roleId: roleId
+        }
+        , function(data) {
+            console.log("SUCCESS! data=" + data);
+            jq.each(data, function(index, value) {
+               console.log("index= "  +index);
+                console.log("value=" + value);
+                console.log("id=" + value.id);
+                console.log("name=" + value.name);
+                return data;
+
+            });
+        }, function(err){
+            emr.handleError(err);
+            console.log("failed to get Attribute Types");
+        });
+}
