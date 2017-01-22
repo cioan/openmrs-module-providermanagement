@@ -56,6 +56,7 @@
     jq(function() {
 
         var addPatientDialog = null;
+        var removePatientDialog = null;
 
         jq('#patient-search').attr("size", "40");
 
@@ -69,11 +70,24 @@
             var providerId = jq(event.target).attr("data-provider-id");
             var relationshipTypeId = jq(event.target).attr("data-relationship-type");
             var relationshipId = jq(event.target).attr("data-patient-relationship");
-            var endDate = '${endDate}';
-            removePatientFromList(providerId, relationshipTypeId, relationshipId, endDate);
+
+            createRemovePatientDialog(providerId, relationshipTypeId, relationshipId);
+            showRemovePatientDialog();
+
+            event.preventDefault();
+            // this is just to prevent datimepicker dropdown to display by default
+            setTimeout(function() {
+                jq(".datetimepicker").hide();
+            }, 100);
+
         });
 
-        jq("input[name='givenName']").focus();
+        if ('${createAccount}' == 'true') {
+            jq("input[name='givenName']").focus();
+        } else {
+            jq("#add-patient-button").focus();
+        }
+
     });
 
 
@@ -88,6 +102,34 @@
     }
 </style>
 
+<div id="remove-patient-dialog" class="dialog" style="display: none">
+    <div class="dialog-header">
+        <h3>${ ui.message("End Relationship") }</h3>
+    </div>
+    <div class="dialog-content">
+        <input type="hidden" id="providerId" value="${account.person.personId}"/>
+        <input type="hidden" id="patientId" value=""/>
+
+        <span>${ ui.message("Are you sure you want to unassign Patient from Provider?") }</span>
+
+        <div class="panel-body ">
+            <fieldset>
+                <p>
+                    ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                            id: "relationshipEndDate",
+                            formFieldName: "relationshipEndDate",
+                            label:"End Date: &nbsp;&nbsp;",
+                            defaultDate: new Date(),
+                            endDate: editDateFormat.format(new Date()),
+                            useTime: false,
+                    ])}
+                </p>
+            </fieldset>
+        </div>
+        <button id="remove-patient-button" class="confirm right">${ ui.message("End relationship") }</button>
+        <button class="cancel">${ ui.message("Cancel") }</button>
+    </div>
+</div>
 
 <div id="add-patient-dialog" class="dialog" style="display: none">
     <div class="dialog-header">

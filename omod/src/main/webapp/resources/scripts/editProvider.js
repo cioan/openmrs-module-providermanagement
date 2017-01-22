@@ -32,17 +32,33 @@ function showAddPatientDialog(){
     addPatientDialog.show();
 }
 
-function removePatientFromList(providerId, relationshipTypeId, relationshipId, endDate) {
-    
-    emr.getFragmentActionWithCallback('providermanagement', 'providerEdit', 'removePatient'
-        , { provider: providerId,
-            relationshipType: relationshipTypeId,
-            patientRelationship: relationshipId,
-            date: endDate
+function createRemovePatientDialog(providerId, relationshipTypeId, relationshipId) {
+    removePatientDialog = emr.setupConfirmationDialog({
+        selector: '#remove-patient-dialog',
+        actions: {
+            confirm: function() {
+                var relationshipEndDateField = jq("#relationshipEndDate-field").val();
+                emr.getFragmentActionWithCallback('providermanagement', 'providerEdit', 'removePatient'
+                    , { provider: providerId,
+                        relationshipType: relationshipTypeId,
+                        patientRelationship: relationshipId,
+                        date: relationshipEndDateField
+                    }
+                    , function(data) {
+                        removePatientDialog.close();
+                        window.location.reload();
+                    }, function(err){
+                        emr.handleError(err);
+                        removePatientDialog.close();
+                    });
+            },
+            cancel: function() {
+                removePatientDialog.close();
+            }
         }
-        , function(data) {
-            window.location.reload();
-        },function(err){
-            emr.handleError(err);
-        });
+    });
+}
+
+function showRemovePatientDialog(){
+    removePatientDialog.show();
 }
