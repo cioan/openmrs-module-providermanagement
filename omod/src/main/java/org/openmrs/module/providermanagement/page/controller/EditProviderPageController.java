@@ -13,6 +13,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.emrapi.account.AccountDomainWrapper;
@@ -39,8 +40,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class EditProviderPageController {
@@ -131,10 +135,32 @@ public class EditProviderPageController {
 
         accountValidator.validate(account, errors);
 
+        Map<Integer, String> attributesMap = new HashMap<Integer, String>();
+        Set<String> paramKeys = request.getParameterMap().keySet();
+        for (String param : paramKeys) {
+            if (param.startsWith("providerAttributeId_")) {
+                Integer providerAttributeId = Integer.valueOf(param.substring("providerAttributeId_".length()));
+                String providerAttributeValue = request.getParameter(param);
+                if (  (providerAttributeId != null) &&
+                        (providerAttributeId.intValue() > 0 )  &&
+                        StringUtils.isNotBlank(providerAttributeValue)) {
+                    attributesMap.put(providerAttributeId, providerAttributeValue);
+                }
+            }
+        }
+
         if (!errors.hasErrors()) {
             try {
                 if (StringUtils.isNotBlank(providerIdentifier)) {
                     account.getProvider().setIdentifier(providerIdentifier);
+                }
+                if ( attributesMap.size() > 0 ) {
+                    for (Integer id : attributesMap.keySet()) {
+                        ProviderAttribute providerAttribute = Context.getService(ProviderService.class).getProviderAttribute(id);
+                        if (providerAttribute != null) {
+                            providerAttribute.setValueReferenceInternal(attributesMap.get(id));
+                        }
+                    }
                 }
                 accountService.saveAccount(account);
                 request.getSession().setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_INFO_MESSAGE,
@@ -184,5 +210,4 @@ public class EditProviderPageController {
         }
         return message;
     }
-
 }
