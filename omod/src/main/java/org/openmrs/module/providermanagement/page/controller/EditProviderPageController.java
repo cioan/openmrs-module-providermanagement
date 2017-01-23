@@ -38,9 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -125,6 +122,7 @@ public class EditProviderPageController {
     public String post(@MethodParam("getAccount") @BindParams AccountDomainWrapper account, BindingResult errors,
                        @RequestParam(value = "userEnabled", defaultValue = "false") boolean userEnabled,
                        @RequestParam(value = "providerIdentifier", required = false) String providerIdentifier,
+                       @SpringBean("providerService") ProviderService providerService,
                        @SpringBean("messageSource") MessageSource messageSource,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @SpringBean("accountService") AccountService accountService,
@@ -135,30 +133,31 @@ public class EditProviderPageController {
 
         accountValidator.validate(account, errors);
 
-        Map<Integer, String> attributesMap = new HashMap<Integer, String>();
-        Set<String> paramKeys = request.getParameterMap().keySet();
-        for (String param : paramKeys) {
-            if (param.startsWith("providerAttributeId_")) {
-                Integer providerAttributeId = Integer.valueOf(param.substring("providerAttributeId_".length()));
-                String providerAttributeValue = request.getParameter(param);
-                if (  (providerAttributeId != null) &&
-                        (providerAttributeId.intValue() > 0 )  &&
-                        StringUtils.isNotBlank(providerAttributeValue)) {
-                    attributesMap.put(providerAttributeId, providerAttributeValue);
-                }
-            }
-        }
+        Map<Integer, String> attributesMap = getAttributeMap("providerAttributeId_", request);
+        Map<Integer, String> attributeTypesMap = getAttributeMap("attributeTypeId_", request);
 
         if (!errors.hasErrors()) {
             try {
+                Provider provider = account.getProvider();
+
                 if (StringUtils.isNotBlank(providerIdentifier)) {
-                    account.getProvider().setIdentifier(providerIdentifier);
+                    provider.setIdentifier(providerIdentifier);
                 }
                 if ( attributesMap.size() > 0 ) {
                     for (Integer id : attributesMap.keySet()) {
-                        ProviderAttribute providerAttribute = Context.getService(ProviderService.class).getProviderAttribute(id);
+                        ProviderAttribute providerAttribute = providerService.getProviderAttribute(id);
                         if (providerAttribute != null) {
                             providerAttribute.setValueReferenceInternal(attributesMap.get(id));
+                        }
+                    }
+                } else if (attributeTypesMap.size() > 0 ) {
+                    for (Integer typeId : attributeTypesMap.keySet()) {
+                        ProviderAttributeType providerAttributeType = providerService.getProviderAttributeType(typeId);
+                        if ( providerAttributeType != null ) {
+                            ProviderAttribute attr = new ProviderAttribute();
+                            attr.setAttributeType(providerAttributeType);
+                            attr.setValueReferenceInternal(attributeTypesMap.get(typeId));
+                            provider.addAttribute(attr);
                         }
                     }
                 }
@@ -182,6 +181,24 @@ public class EditProviderPageController {
         model.addAttribute("providerRoles", providerManagementService.getAllProviderRoles(false));
 
         return "redirect:/providermanagement/editProvider.page";
+    }
+
+
+    private Map<Integer, String> getAttributeMap(String parameterPrefix, HttpServletRequest request) {
+        Map<Integer, String> attributesMap = new HashMap<Integer, String>();
+        Set<String> paramKeys = request.getParameterMap().keySet();
+        for (String param : paramKeys) {
+            if (param.startsWith(parameterPrefix)) {
+                Integer providerAttributeId = Integer.valueOf(param.substring(parameterPrefix.length()));
+                String providerAttributeValue = request.getParameter(param);
+                if ((providerAttributeId != null) &&
+                        (providerAttributeId.intValue() > 0) &&
+                        StringUtils.isNotBlank(providerAttributeValue)) {
+                    attributesMap.put(providerAttributeId, providerAttributeValue);
+                }
+            }
+        }
+        return attributesMap;
     }
 
     private void sendErrorMessage(BindingResult errors, MessageSource messageSource, HttpServletRequest request) {

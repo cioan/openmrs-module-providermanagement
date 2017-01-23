@@ -5,8 +5,16 @@
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("Provider Management/Providers List")}"}
+        { label: "${ ui.message("Providers List")}"}
     ];
+
+    jq(function() {
+
+
+        setTimeout(function() {
+            jq("#providers-list_filter input:text").first().focus();
+        }, 500);
+    });
 
 </script>
 

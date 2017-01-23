@@ -86,8 +86,6 @@
 
          jq("select[name='providerRole']").on('change', function(event) {
              var roleId = this.value;
-             console.log("provider role has been selected: " + roleId );
-
          });
 
         if ('${createAccount}' == 'true') {
@@ -97,7 +95,6 @@
         }
 
         var selectedProviderRole = jq("select[name='providerRole']").val();
-        console.log("selectedProviderRole = " + selectedProviderRole);
         if ( !isNaN(selectedProviderRole) ) {
             // we have number
             //var attributeTypes = getProviderRoleAttributeTypes(parseInt(selectedProviderRole));

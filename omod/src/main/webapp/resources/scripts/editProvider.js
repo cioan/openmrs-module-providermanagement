@@ -68,7 +68,6 @@ function getProviderRoleAttributeTypes(roleId) {
         , { roleId: roleId
         }
         , function(data) {
-            console.log("SUCCESS! data=" + data);
             jq.each(data, function(index, value) {
                console.log("index= "  +index);
                 console.log("value=" + value);
