@@ -246,22 +246,23 @@
                                             ])}
                                     <% } %>
                                 <% } %>
-                            <% } else if (providerAttributeTypes != null && providerAttributeTypes.size() > 0) {
-                                        providerAttributeTypes.each { attributeType ->
-                                        if ( attributeType.datatypeClassname == 'org.openmrs.customdatatype.datatype.DateDatatype' ) {  %>
-                                            ${ ui.includeFragment("uicommons", "field/datetimepicker", [
-                                                    id: "attributeTypeId_" + attributeType.providerAttributeTypeId,
-                                                    formFieldName: "attributeTypeId_" + attributeType.providerAttributeTypeId,
-                                                    label: attributeType.name,
-                                                    useTime: false,
-                                            ])}
-                                        <% } else { %>
-                                            ${ ui.includeFragment("uicommons", "field/text", [
-                                                    label: attributeType.name,
-                                                    formFieldName: "attributeTypeId_" + attributeType.providerAttributeTypeId
-                                            ])}
-                                        <% } %>
+                            <%}
+                            if (providerAttributeTypes != null && providerAttributeTypes.size() > 0) {
+                                    providerAttributeTypes.each { attributeType ->
+                                    if ( attributeType.datatypeClassname == 'org.openmrs.customdatatype.datatype.DateDatatype' ) {  %>
+                                        ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                                                id: "attributeTypeId_" + attributeType.providerAttributeTypeId,
+                                                formFieldName: "attributeTypeId_" + attributeType.providerAttributeTypeId,
+                                                label: attributeType.name,
+                                                useTime: false,
+                                        ])}
+                                    <% } else { %>
+                                        ${ ui.includeFragment("uicommons", "field/text", [
+                                                label: attributeType.name,
+                                                formFieldName: "attributeTypeId_" + attributeType.providerAttributeTypeId
+                                        ])}
                                     <% } %>
+                                <% } %>
                             <% } %>
                         <% } %>
                     </div>

@@ -99,6 +99,11 @@ public class EditProviderPageController {
             ProviderRole providerRole = provider.getProviderRole();
             if (providerRole != null && providerRole.getRelationshipTypes() != null) {
                 providerAttributeTypes = providerRole.getProviderAttributeTypes();
+                Set<ProviderAttribute> attributes = provider.getAttributes();
+                for (ProviderAttribute attribute : attributes) {
+                    // remove from the list of Attribute Types the ones that are already entered for this provider
+                    providerAttributeTypes.remove(attribute.getAttributeType());
+                }
                 for (RelationshipType relationshipType : providerRole.getRelationshipTypes() ) {
                     if (!relationshipType.isRetired()) {
                         relationshipTypes.add(relationshipType);
@@ -150,7 +155,8 @@ public class EditProviderPageController {
                             providerAttribute.setValueReferenceInternal(attributesMap.get(id));
                         }
                     }
-                } else if (attributeTypesMap.size() > 0 ) {
+                }
+                if (attributeTypesMap.size() > 0 ) {
                     for (Integer typeId : attributeTypesMap.keySet()) {
                         ProviderAttributeType providerAttributeType = providerService.getProviderAttributeType(typeId);
                         if ( providerAttributeType != null ) {
