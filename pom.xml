@@ -50,13 +50,12 @@
 		<openMRSVersion>1.9.9</openMRSVersion>
 		<openMRSwebVersion>1.9.9</openMRSwebVersion>
 		<appframeworkVersion>2.9</appframeworkVersion>
-		<appuiVersion>1.7</appuiVersion>
 		<calculationVersion>1.2</calculationVersion>
 		<emrapiVersion>1.19</emrapiVersion>
 		<uicommonsVersion>2.1</uicommonsVersion>
 		<uiframeworkVersion>3.9</uiframeworkVersion>
 		<uilibraryVersion>1.5</uilibraryVersion>
-		<webservicesRestVersion>2.13</webservicesRestVersion>
+		<coreappsVersion>1.11.2-SNAPSHOT</coreappsVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -132,13 +131,6 @@
 				<artifactId>appframework-api</artifactId>
 				<version>${appframeworkVersion}</version>
 				<classifier>tests</classifier>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.openmrs.module</groupId>
-				<artifactId>appui-api</artifactId>
-				<version>${appuiVersion}</version>
 				<scope>provided</scope>
 			</dependency>
 

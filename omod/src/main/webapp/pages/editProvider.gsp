@@ -321,7 +321,7 @@
                             <thead>
                             <tr>
                                 <th>${ ui.message("Identifier") }</th>
-                                <th>${ ui.message("coreapps.person.name") }</th>
+                                <th>${ ui.message("Name") }</th>
                                 <th>${ ui.message("Start Date") }</th>
                                 <th>&nbsp;</th>
                             </tr>
@@ -331,7 +331,7 @@
                             <% if ((patientsList == null) ||
                                     (patientsList != null && patientsList.size() == 0)) { %>
                             <tr>
-                                <td colspan="4">${ ui.message("coreapps.none") }</td>
+                                <td colspan="4">${ ui.message("None") }</td>
                             </tr>
                             <% } %>
                             <% patientsList.each { row ->
@@ -371,7 +371,7 @@
                                     <thead>
                                     <tr>
                                         <th>${ ui.message("Identifier") }</th>
-                                        <th>${ ui.message("coreapps.person.name") }</th>
+                                        <th>${ ui.message("Name") }</th>
                                         <th>${ ui.message("Start Date") }</th>
                                         <th>${ ui.message("End Date") }</th>
                                     </tr>
@@ -381,7 +381,7 @@
                                     <% if ((patientsHistoryList == null) ||
                                             (patientsHistoryList != null && patientsHistoryList.size() == 0)) { %>
                                     <tr>
-                                        <td colspan="4">${ ui.message("coreapps.none") }</td>
+                                        <td colspan="4">${ ui.message("None") }</td>
                                     </tr>
                                     <% } %>
                                     <% patientsHistoryList.each { row ->

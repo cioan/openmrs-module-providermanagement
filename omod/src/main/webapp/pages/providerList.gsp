@@ -29,8 +29,8 @@
     <thead>
         <tr>
             <th>${ ui.message("Identifier") }</th>
-            <th>${ ui.message("coreapps.person.name") }</th>
-            <th>${ ui.message("coreapps.gender") }</th>
+            <th>${ ui.message("Name") }</th>
+            <th>${ ui.message("Gender") }</th>
             <th>${ ui.message("Role") }</th>
         </tr>
     </thead>
@@ -39,7 +39,7 @@
         <% if ((providersList == null) ||
                 (providersList != null && providersList.size() == 0)) { %>
         <tr>
-            <td colspan="2">${ ui.message("coreapps.none") }</td>
+            <td colspan="2">${ ui.message("None") }</td>
         </tr>
         <% } %>
         <% providersList.each { provider ->
