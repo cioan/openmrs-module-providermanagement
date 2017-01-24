@@ -53,7 +53,6 @@
 		<appuiVersion>1.7</appuiVersion>
 		<calculationVersion>1.2</calculationVersion>
 		<emrapiVersion>1.19</emrapiVersion>
-		<serializationxstreamVersion>0.2.12</serializationxstreamVersion>
 		<uicommonsVersion>2.1</uicommonsVersion>
 		<uiframeworkVersion>3.9</uiframeworkVersion>
 		<uilibraryVersion>1.5</uilibraryVersion>

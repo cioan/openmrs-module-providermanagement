@@ -108,10 +108,12 @@ public class EditProviderPageController {
                     if (!relationshipType.isRetired()) {
                         relationshipTypes.add(relationshipType);
                         for (Relationship relationship : providerManagementService.getPatientRelationshipsForProvider(provider.getPerson(), relationshipType, null)) {
-                            if (relationship.getEndDate() == null) {
-                                patientsList.add(new ProviderPatientRelationship(patientService.getPatient(relationship.getPersonB().getId()), relationship, relationshipType));
-                            } else {
-                                patientsHistoryList.add(new ProviderPatientRelationship(patientService.getPatient(relationship.getPersonB().getId()), relationship, relationshipType));
+                            if (relationship.getPersonB().isPatient()) {
+                                if (relationship.getEndDate() == null) {
+                                    patientsList.add(new ProviderPatientRelationship(patientService.getPatient(relationship.getPersonB().getId()), relationship, relationshipType));
+                                } else {
+                                    patientsHistoryList.add(new ProviderPatientRelationship(patientService.getPatient(relationship.getPersonB().getId()), relationship, relationshipType));
+                                }
                             }
                         }
                     }

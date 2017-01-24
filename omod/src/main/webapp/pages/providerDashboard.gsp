@@ -525,7 +525,7 @@
                     searchParams: [ excludeSuperviseesOf: person.id, providerRoles: provider.providerRole?.superviseeProviderRoles.collect { it.id } ],
                     resultFields: providerSearchDisplayFields.values(),
                     resultFieldLabels: providerSearchDisplayFields.keySet(),
-                    selectDisplayFields: ["personName.givenName","personName.middleName","personName.familyName"],
+                    selectDisplayFields: ["provider.person.personName.givenName","provider.person.personName.middleName","provider.person.personName.familyName"],
                     submitAction: ui.actionLink('providermanagement', 'providerEdit', 'addSupervisee', [successUrl: ui.pageLink("providermanagement", "providerDashboard", [personId: person.id, paneId: superviseesId] )]),
                     submitIdParam: "supervisee",
                     submitParams: [ supervisor: person.id ],
