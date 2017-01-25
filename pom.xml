@@ -49,31 +49,16 @@
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
 		<openMRSwebVersion>1.9.9</openMRSwebVersion>
-		<appframeworkVersion>2.9</appframeworkVersion>
 		<calculationVersion>1.2</calculationVersion>
 		<emrapiVersion>1.19</emrapiVersion>
 		<uicommonsVersion>2.1</uicommonsVersion>
 		<uiframeworkVersion>3.9</uiframeworkVersion>
 		<uilibraryVersion>1.5</uilibraryVersion>
-		<coreappsVersion>1.11.2-SNAPSHOT</coreappsVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-		
-			<!--
-			Libraries to add as dependencies with compile or runtime scope:
-			Find matching dependencies in the maven central repository.
-			<dependency>
-				<groupId>org.other.library</groupId>
-				<artifactId>library-name</artifactId>
-				<version>library.version</version>
-				<scope>compile</scope>
-			</dependency>
-			-->
-			
-			
 
 			<!-- Begin OpenMRS core -->
 			
@@ -118,21 +103,6 @@
 			</dependency>
 						
 			<!-- End OpenMRS core -->
-
-			<dependency>
-				<groupId>org.openmrs.module</groupId>
-				<artifactId>appframework-api</artifactId>
-				<version>${appframeworkVersion}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.openmrs.module</groupId>
-				<artifactId>appframework-api</artifactId>
-				<version>${appframeworkVersion}</version>
-				<classifier>tests</classifier>
-				<scope>provided</scope>
-			</dependency>
 
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
